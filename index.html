@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeMaster Learning Suite - Day Countdown</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #clock {
+            font-size: 2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="clock"></div>
+    <script>
+        // Configuration
+        const NANOSECOND_TO_MS = 1e6; // 1 millisecond = 1,000,000 nanoseconds
+        const NANOSECOND_DURATION = 10000; // 10 seconds in milliseconds
+        const MS_PER_DAY = 86400000; // Milliseconds in a day
+
+        // DOM Elements
+        const clockElement = document.getElementById('clock');
+
+        // Start time in milliseconds
+        let startTime = Date.now();
+
+        function updateClock() {
+            let now = Date.now();
+            let elapsedTime = now - startTime;
+
+            if (elapsedTime < NANOSECOND_DURATION) {
+                // Display in nanoseconds for 10 seconds
+                clockElement.textContent = `${Math.floor(elapsedTime * NANOSECOND_TO_MS)} nanoseconds`;
+            } else {
+                // Calculate and display minutes left in the day
+                let timeLeftInDay = MS_PER_DAY - (now % MS_PER_DAY);
+                let minutesLeft = Math.floor(timeLeftInDay / 60000); // 60000 milliseconds in a minute
+                let secondsLeft = Math.floor((timeLeftInDay % 60000) / 1000);
+                clockElement.textContent = `${minutesLeft}:${secondsLeft.toString().padStart(2, '0')} minutes left in the day`;
+            }
+            
+            requestAnimationFrame(updateClock);
+        }
+
+        // Start the clock
+        updateClock();
+    </script>
+</body>
+</html>
