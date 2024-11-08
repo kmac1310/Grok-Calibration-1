@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeMaster Learning Suite - Day Countdown</title>
+    <title>TimeMaster Learning Suite - Day Countdown in EST</title>
     <style>
         body {
             display: flex;
@@ -25,7 +25,7 @@
     <script>
         // Configuration
         const NANOSECOND_TO_MS = 1e6; // 1 millisecond = 1,000,000 nanoseconds
-        const NANOSECOND_DURATION = 10000; // 10 seconds in milliseconds
+        const NANOSECOND_DURATION = 20000; // 20 seconds in milliseconds
         const MS_PER_DAY = 86400000; // Milliseconds in a day
 
         // DOM Elements
@@ -34,16 +34,26 @@
         // Start time in milliseconds
         let startTime = Date.now();
 
+        function getESTTime() {
+            // Create a date object set to UTC
+            let utcDate = new Date();
+            // Adjust for EST (UTC-5 hours, no DST for simplicity)
+            return new Date(utcDate.toLocaleString('en-US', {timeZone: 'America/New_York'}));
+        }
+
         function updateClock() {
             let now = Date.now();
             let elapsedTime = now - startTime;
 
             if (elapsedTime < NANOSECOND_DURATION) {
-                // Display in nanoseconds for 10 seconds
-                clockElement.textContent = `${Math.floor(elapsedTime * NANOSECOND_TO_MS)} nanoseconds`;
+                // Display in nanoseconds, removing 6 zeros for readability
+                clockElement.textContent = `${Math.floor(elapsedTime * NANOSECOND_TO_MS / 1e6)} nanoseconds`;
             } else {
-                // Calculate and display minutes left in the day
-                let timeLeftInDay = MS_PER_DAY - (now % MS_PER_DAY);
+                let currentTime = getESTTime();
+                let midnightEST = new Date(currentTime);
+                midnightEST.setHours(24,0,0,0); // Set to next midnight in EST
+                
+                let timeLeftInDay = midnightEST - currentTime;
                 let minutesLeft = Math.floor(timeLeftInDay / 60000); // 60000 milliseconds in a minute
                 let secondsLeft = Math.floor((timeLeftInDay % 60000) / 1000);
                 clockElement.textContent = `${minutesLeft}:${secondsLeft.toString().padStart(2, '0')} minutes left in the day`;
